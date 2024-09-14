@@ -2,8 +2,12 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from typing import Literal
+from langchain import hub
 
 members = ["Researcher", "Coder"]
+
+prompt_template = hub.pull("code_assist_manager")
+
 system_prompt = (
     "You are a supervisor tasked with managing a conversation between the"
     " following workers:  {members}. Given the following user request,"
