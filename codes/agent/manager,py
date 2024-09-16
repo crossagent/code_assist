@@ -6,7 +6,9 @@ from langchain import hub
 
 members = ["Researcher", "Coder"]
 
-prompt_template = hub.pull("code_assist_manager")
+hub_prompt = hub.pull("code_assist_manager")
+
+#print(hub_prompt.messages)
 
 system_prompt = (
     "You are a supervisor tasked with managing a conversation between the"
@@ -25,6 +27,7 @@ class routeResponse(BaseModel):
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
+        #hub_prompt.messages[0],
         MessagesPlaceholder(variable_name="messages"),
         (
             "system",
@@ -34,6 +37,7 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 ).partial(options=str(options), members=", ".join(members))
 
+print(prompt)
 
 llm = ChatOpenAI(model="gpt-4o")
 
