@@ -4,3 +4,4 @@ langchain_openai
 langchain_experimental
 langsmith
 pandas
+faiss_cpu

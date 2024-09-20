@@ -14,7 +14,6 @@ class AgentState(TypedDict):
     # The 'next' field indicates where to route to next
     next: str
 
-
 research_agent = create_react_agent(llm, tools=[tavily_tool])
 research_node = functools.partial(agent_node, agent=research_agent, name="Researcher")
 

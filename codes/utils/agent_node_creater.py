@@ -7,6 +7,9 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 from langgraph.graph import END, StateGraph, START
 def agent_node(state, agent, name):
+    """
+    这个函数实际上是把agent做的事情，最终用HumanMessage的形式返回，实际上是做了一个最终总结的工作
+    """
     result = agent.invoke(state)
     return {"messages": [HumanMessage(content=result["messages"][-1].content, name=name)]}
 
@@ -17,13 +20,8 @@ def create_agent(llm, tools, system_message: str):
         [
             (
                 "system",
-                "You are a helpful AI assistant, collaborating with other assistants."
-                " Use the provided tools to progress towards answering the question."
-                " If you are unable to fully answer, that's OK, another assistant with different tools "
-                " will help where you left off. Execute what you can to make progress."
-                " If you or any of the other assistants have the final answer or deliverable,"
-                " prefix your response with FINAL ANSWER so the team knows to stop."
-                " You have access to the following tools: {tool_names}.\n{system_message}",
+                "{system_message}\n"
+                " You have access to the following tools: {tool_names}.",
             ),
             MessagesPlaceholder(variable_name="messages"),
         ]

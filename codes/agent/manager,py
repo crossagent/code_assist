@@ -22,8 +22,7 @@ class routeResponse(BaseModel):
 
 prompt = ChatPromptTemplate.from_messages(
     [
-        #("system", system_prompt),
-        hub_prompt.messages[0],
+        ("system", system_prompt),
         MessagesPlaceholder(variable_name="messages"),
         (
             "system",

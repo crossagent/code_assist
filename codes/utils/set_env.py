@@ -21,3 +21,5 @@ console_handler.setFormatter(formatter)
 
 # 将处理程序添加到 logger 中
 logger.addHandler(console_handler)
+
+api_db_path = "./data/faiss_index/multiplayer_op"
