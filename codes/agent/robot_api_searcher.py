@@ -7,9 +7,12 @@ from langchain_core.messages import (
     HumanMessage,
     ToolMessage,
 )
+from typing_extensions import Callable, List, TypedDict, Dict
 import codes.utils.set_env
 from langgraph.graph.graph import CompiledGraph
 import json
+import functools
+from codes.schema.graph_state import AgentState
 
 def get_api_searcher_agent() -> CompiledGraph:
     """
@@ -48,17 +51,23 @@ def invoke_api_search_agent_node(state, agent, name):
             except json.JSONDecodeError:
                 print(f"Failed to decode JSON for message: {message}")
 
-    return {"messages": [HumanMessage(content=json.dumps(tool_messages_content), name=name)]}
+    return {"messages": [HumanMessage(content={f"Information about potentially used API functions:{json.dumps(tool_messages_content)}"}, name=name)]}
+
+def get_api_searcher_node() -> Callable[[AgentState], Dict[str, List[BaseMessage]]]:
+    agent = get_api_searcher_agent()
+
+    api_search_node = functools.partial(invoke_api_search_agent_node, agent=agent, name="ApiSearcher")
+
+    return api_search_node
 
 # 确保main函数作为程序入口被调用
 if __name__ == "__main__":
-    from codes.schema.graph_state import AgentState
-
-    agent = get_api_searcher_agent()
 
     agent_state = AgentState(messages=[HumanMessage(content="跑动前方5米，装备狙击枪，更换.56子弹")])
 
-    output = invoke_api_search_agent_node(agent_state, agent, "api_searcher")
+    node = get_api_searcher_node()
+
+    output = node(agent_state)
 
     print(output)
     

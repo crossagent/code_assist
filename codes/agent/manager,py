@@ -36,7 +36,7 @@ print(prompt)
 
 llm = ChatOpenAI(model="gpt-4o")
 
-def supervisor_agent(state):
+def invoke_supervisor_agent_node(state):
     supervisor_chain = (
         prompt
         | llm.with_structured_output(routeResponse)
