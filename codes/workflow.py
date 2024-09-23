@@ -6,14 +6,6 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph, START  # noqa: F401
 from langgraph.prebuilt import create_react_agent
 
-# The agent state is the input to each node in the graph
-class AgentState(TypedDict):
-    # The annotation tells the graph that new messages will always
-    # be added to the current states
-    messages: Annotated[Sequence[BaseMessage], operator.add]
-    # The 'next' field indicates where to route to next
-    next: str
-
 research_agent = create_react_agent(llm, tools=[tavily_tool])
 research_node = functools.partial(agent_node, agent=research_agent, name="Researcher")
 

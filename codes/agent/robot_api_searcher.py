@@ -8,10 +8,10 @@ from langchain_core.messages import (
     ToolMessage,
 )
 import codes.utils.set_env
-from codes.utils.agent_node_creater import create_agent
+from langgraph.graph.graph import CompiledGraph
 import json
 
-def get_api_searcher_agent():
+def get_api_searcher_agent() -> CompiledGraph:
     """
     创建一个接口查询助手
     """
@@ -22,17 +22,15 @@ def get_api_searcher_agent():
     """
     )
 
-    #api_agent = create_agent(llm, [robot_action], system_prompt)
-
     api_agent = create_react_agent(llm, tools = [robot_action], state_modifier=system_prompt)
 
     return api_agent
 
-def agent_node(state, agent, name):
+def invoke_api_search_agent_node(state, agent, name):
     """
     这个函数实际上是把agent做的事情，最终用HumanMessage的形式返回，实际上是做了一个最终总结的工作
     """
-    result = agent.invoke(state)
+    msg = agent.invoke(state)
 
     tool_messages_content = []
 
@@ -54,23 +52,13 @@ def agent_node(state, agent, name):
 
 # 确保main函数作为程序入口被调用
 if __name__ == "__main__":
+    from codes.schema.graph_state import AgentState
+
     agent = get_api_searcher_agent()
 
-    input = [("user", "跑动前方5米，装备狙击枪，更换.56子弹")]
+    agent_state = AgentState(messages=[HumanMessage(content="跑动前方5米，装备狙击枪，更换.56子弹")])
 
-    msg = agent.invoke({"messages": input})
-
-    #print(msg["messages"])
-
-    tool_messages_content = []
-
-    # 遍历 msg["messages"]
-    for message in msg["messages"]:
-        # 检查消息类型是否为 ToolMessage
-        if message.type == "tool":
-            tool_messages_content.append(message.content)
-
-    output = {"messages": [HumanMessage(content=tool_messages_content, name="test")]}
+    output = invoke_api_search_agent_node(agent_state, agent, "api_searcher")
 
     print(output)
     
